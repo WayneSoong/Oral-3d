@@ -1,6 +1,6 @@
 from model.base_model import *
 import torch
-from termcolor import colored
+
 
 class GAN(torch.nn.Module):
     def __init__(self, generator, discriminator):
