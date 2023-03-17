@@ -1,3 +1,6 @@
 nibabel
 termcolor
 scipy
+munch
+torch
+torchvision

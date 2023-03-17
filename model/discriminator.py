@@ -1,18 +1,16 @@
 import torch
 import torch.nn as nn
-from model.layer import ConvRelu
 import random
 
 
 # Patch Discriminator
 class PatchDiscriminator(nn.Module):
-    def __init__(self, patch_n=5, cuda_id=None):
+    def __init__(self, patch_n=5, device='cuda'):
         super(PatchDiscriminator, self).__init__()
-        self.name = 'Patch'
         self.patch_n = patch_n
         self.chns = [16, 32, 64, 128]
         self.patch_window = 70
-        self.cuda_id = cuda_id
+        self.device = device
 
         # 70
         self.layer_1 = ConvNormRelu(1,           self.chns[0], k=4, s=2, p=0)
@@ -30,15 +28,15 @@ class PatchDiscriminator(nn.Module):
         gr_patches, gt_patches = self.get_patches(gr_tensor, gt_tensor)
         gr_prediction = self.forward(gr_patches)
         gt_prediction = self.forward(gt_patches)
-        loss_gr = (gr_prediction - torch.zeros(self.patch_n).cuda(self.cuda_id))**2
-        loss_gt = (gt_prediction - torch.ones(self.patch_n).cuda(self.cuda_id))**2
+        loss_gr = (gr_prediction - torch.zeros(self.patch_n).to(self.device))**2
+        loss_gt = (gt_prediction - torch.ones(self.patch_n).to(self.device))**2
         return (loss_gr.mean() + loss_gt.mean())/2
 
     def inference(self, gr_tensor):
         # update for generator
         gr_patches = self.get_patches(gr_tensor)[0]
         gr_prediction = self.forward(gr_patches)
-        loss_gr = (gr_prediction - torch.ones(self.patch_n).cuda(self.cuda_id))**2
+        loss_gr = (gr_prediction - torch.ones(self.patch_n).to(self.device))**2
         return loss_gr.mean()
 
     def forward(self, patches):

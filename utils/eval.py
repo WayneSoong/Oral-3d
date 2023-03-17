@@ -1,6 +1,5 @@
 import numpy as np
 import math
-from scipy.ndimage.morphology import binary_fill_holes
 
 
 def get_psnr(img_1, img_2, SCALE=2.0):

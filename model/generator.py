@@ -4,9 +4,8 @@ import torch
 
 
 class Encoder_MPR(nn.Module):
-    def __init__(self, name='Encoder_MPR'):
+    def __init__(self):
         super(Encoder_MPR, self).__init__()
-        self.name = name
         # input: [1, 160, 576]
         self.down_block_0 = ConvRelu(1, 10)
         # down_0: [10, 160, 576]

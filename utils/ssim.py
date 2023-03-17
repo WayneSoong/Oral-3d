@@ -4,41 +4,19 @@ import numpy as np
 import math
 
 
-def mse_loss(gr, gt):
-    loss = F.mse_loss(gr, gt)
-    return loss
-
-
-class MSE_loss(torch.nn.Module):
-    def __init__(self, scalar=1):
-        super(MSE_loss, self).__init__()
-        self.scalar = scalar
-
-    def forward(self, input_tensor, gr_tensor, weight_map=None):
-        error_sq = (input_tensor - gr_tensor)**2
-        if weight_map:
-            error_background = torch.mean(error_sq[weight_map == 0])
-            error_foreground = torch.mean(error_sq[weight_map > 0])
-            scaled_error = (error_background + self.scalar*error_foreground)/(1+self.scalar)
-        else:
-            scaled_error = error_sq.mean()
-        return scaled_error
-
-
 class SSIM(torch.nn.Module):
-    def __init__(self, window_size=11, sigma=1.5, size_average=True, cuda_id=None):
+    def __init__(self, window_size=11, sigma=1.5, size_average=True, device='cuda'):
         super(SSIM, self).__init__()
         self.window_size = window_size
         self.size_average = size_average
         self.channel = 1
-        self.cuda_id = cuda_id
+        self.device = device
         self.window = self.get_gaussian_kernel([window_size] * 3, sigma)
 
     def convert2tensor(self, img):
         # expand channel
         img_tensor = torch.tensor(np.expand_dims(img, axis=0), dtype=torch.float)
-        if self.cuda_id is not None:
-            img_tensor = img_tensor.cuda(self.cuda_id)
+        img_tensor = img_tensor.to(self.device)
         return img_tensor.unsqueeze(1)
 
     def get_ssim_loss(self, gr, gt):
@@ -81,7 +59,7 @@ class SSIM(torch.nn.Module):
         gt = self.convert2tensor(gt)
         ssim = self._get_ssim(gr, gt)
 
-        if self.cuda_id is not None:
+        if 'cuda' in self.device:
             ssim = ssim.cpu().numpy()
         return ssim
 
@@ -106,7 +84,5 @@ class SSIM(torch.nn.Module):
         weights = np.expand_dims(weights / np.sum(weights), 0)
         weights = np.expand_dims(weights, 0)
 
-        weights = torch.tensor(weights, dtype=torch.float)
-        if self.cuda_id is not None:
-            weights = weights.cuda(self.cuda_id)
+        weights = torch.tensor(weights, dtype=torch.float).to(self.device)
         return weights
