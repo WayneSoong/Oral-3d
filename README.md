@@ -17,7 +17,7 @@ Oral-3d is a GAN-based model that learns to generate 3D oral structure from pano
 
  ## Data Format
  We assume that all the required data is saved in .mat file. An example case be seen seen in ./data/mat
- A mat file is expected to store the below fields:
+ A mat file is expected to contain below fields:
 
 ```
 # Given the CBCT in [256, 288, 160]
@@ -35,7 +35,7 @@ training, validation, and test data according to existing split.csv.
 
 To train the model, the user could run by:
 ```
-python main.py --mode train --data_root {data_root} # By default, we assume the data is saved under ./data/mat
+python main.py --mode train --data_root {data_root}
 ```
 
  ## Test
