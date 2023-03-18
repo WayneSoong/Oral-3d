@@ -15,14 +15,18 @@ from utils.local_io import *
 # A *.mat file should include all the training info.
 
 class Dataset:
-    def __init__(self, data_root, DEBUG=False):
+    def __init__(self, data_root, test_only=False, DEBUG=False):
         self.mat_dir = data_root
         self.DEBUG = DEBUG
         name_list = self._get_name_list()
-        train_list = self._load_data(name_list['train'])
-        self.train_sampler = Sampler(train_list)
-        self.val_sampler = Sampler(self._load_data(name_list['val']))
-        self.avg_sample_points = self._get_avg_sample_points(train_list)
+        if test_only:
+            self.train_sampler = None
+            self.val_sampler = None
+        else:
+            self.train_sampler = Sampler(self._load_data(name_list['train']))
+            self.val_sampler = Sampler(self._load_data(name_list['val']))
+            
+        # self.avg_sample_points = self._get_avg_sample_points(train_list)
         # if in test_mode, load test_data
         self.test_sampler = Sampler(self._load_data(name_list['test']))
 

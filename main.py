@@ -24,10 +24,12 @@ arg_parser.add_argument('--d_lr', dest='d_lr', type=float, default=0.001,
                         help='epoch nums for saving model')
 arg_parser.add_argument('--mode', dest='mode', type=str, default='test',
                         help='train/test model')
+arg_parser.add_argument('--test_only', action='store_true',
+                        help='whether loading test data only')
 
 if __name__ == '__main__':
     args = arg_parser.parse_args()
-    dataset = Dataset(args.data_root)
+    dataset = Dataset(args.data_root, test_only=args.test_only)
     
     oral_3d_model = Oral3D(device=args.device)
     solver = Solver(dataset, oral_3d_model, MPR=True, args=args)
